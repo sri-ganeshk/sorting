@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Algorithms Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 25px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .canvas-container {
+            width: 100%;
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            border: 1px solid #e0e0e0;
+            background-color: #fafafa;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .controls {
+            margin: 25px 0;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            flex-grow: 1;
+            font-size: 16px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.15s, background-color 0.3s;
+            font-size: 16px;
+            font-weight: 500;
+            min-width: 90px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .algorithm-select {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .algorithm-btn {
+            background-color: #95a5a6;
+        }
+
+        .algorithm-btn:hover {
+            background-color: #7f8c8d;
+        }
+
+        .algorithm-btn.active {
+            background-color: #3498db;
+        }
+
+        .algorithm-btn.active:hover {
+            background-color: #2980b9;
+        }
+
+        #nextBtn {
+            background-color: #2ecc71;
+        }
+
+        #nextBtn:hover {
+            background-color: #27ae60;
+        }
+
+        #resetBtn {
+            background-color: #e74c3c;
+        }
+
+        #resetBtn:hover {
+            background-color: #c0392b;
+        }
+
+        .info {
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .status {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-weight: 600;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #e74c3c;
+            min-height: 24px;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .explanation {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+        }
+
+        .explanation h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .explanation p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .explanation h3 {
+            margin: 20px 0 15px;
+            color: #2c3e50;
+        }
+
+        .explanation ul {
+            list-style-type: circle;
+            padding-left: 25px;
+        }
+
+        .explanation li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+
+            .algorithm-select {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sorting Algorithm Visualization</h1>
+        
+        <div class="controls">
+            <div class="input-group">
+                <input type="text" id="arrayInput" placeholder="Enter numbers separated by commas (e.g., 64,34,25,12,22,11,90)">
+                <button id="startBtn">Initialize</button>
+            </div>
+            
+            <div class="algorithm-select">
+                <button id="bubbleBtn" class="algorithm-btn active">Bubble Sort</button>
+                <button id="selectionBtn" class="algorithm-btn">Selection Sort</button>
+                <button id="insertionBtn" class="algorithm-btn">Insertion Sort</button>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="sortCanvas" width="800" height="300"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="input-group">
+                <button id="nextBtn">Next Step</button>
+                <button id="resetBtn">Reset</button>
+            </div>
+        </div>
+        
+        <div class="info">
+            <div class="status" id="status">Enter an array and click Initialize</div>
+            <div class="message" id="message"></div>
+        </div>
+        
+        <div class="explanation">
+            <h2 id="algorithmTitle">Bubble Sort</h2>
+            <p id="algorithmDescription">Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order.</p>
+            
+            <h3>Current Step:</h3>
+            <p id="stepExplanation">No sorting in progress. Enter an array to begin.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const canvas = document.getElementById('sortCanvas');
+            const ctx = canvas.getContext('2d');
+            const canvasContainer = document.querySelector('.canvas-container');
+            const arrayInput = document.getElementById('arrayInput');
+            const startBtn = document.getElementById('startBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const bubbleBtn = document.getElementById('bubbleBtn');
+            const selectionBtn = document.getElementById('selectionBtn');
+            const insertionBtn = document.getElementById('insertionBtn');
+            const statusEl = document.getElementById('status');
+            const messageEl = document.getElementById('message');
+            const algorithmTitle = document.getElementById('algorithmTitle');
+            const algorithmDescription = document.getElementById('algorithmDescription');
+            const stepExplanation = document.getElementById('stepExplanation');
+
+            // Set high resolution canvas
+            function setupHighResolutionCanvas() {
+                // Get the device pixel ratio
+                const dpr = window.devicePixelRatio || 1;
+                
+                // Get the container's size
+                const rect = canvasContainer.getBoundingClientRect();
+                const displayWidth = rect.width;
+                const displayHeight = 300; // Keep height as 300
+                
+                // Set canvas size in CSS pixels
+                canvas.style.width = displayWidth + 'px';
+                canvas.style.height = displayHeight + 'px';
+                
+                // Set canvas size in actual pixels (higher resolution)
+                canvas.width = Math.floor(displayWidth * dpr);
+                canvas.height = Math.floor(displayHeight * dpr);
+                
+                // Scale the context
+                ctx.scale(dpr, dpr);
+                
+                // Enable image smoothing
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+            }
+            
+            // Call setup function
+            setupHighResolutionCanvas();
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                setupHighResolutionCanvas();
+                draw();
+            });
+
+            // Algorithm state
+            let currentAlgorithm = 'bubble';
+            let array = [];
+            let originalArray = [];
+            let sortingInProgress = false;
+            let currentStep = 0;
+            let animationFrameId = null;
+            let isAnimating = false;
+            let swapIndices = [-1, -1]; // For highlighting swapped elements
+            let comparisonIndices = [-1, -1]; // For highlighting compared elements
+            
+            // Algorithm configurations
+            const bubbleSortSteps = [];
+            const selectionSortSteps = [];
+            const insertionSortSteps = [];
+            
+            // Set active algorithm button
+            function setActiveAlgorithm(algorithm) {
+                bubbleBtn.classList.remove('active');
+                selectionBtn.classList.remove('active');
+                insertionBtn.classList.remove('active');
+                
+                if (algorithm === 'bubble') {
+                    bubbleBtn.classList.add('active');
+                    algorithmTitle.textContent = 'Bubble Sort';
+                    algorithmDescription.textContent = 'Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order.';
+                } else if (algorithm === 'selection') {
+                    selectionBtn.classList.add('active');
+                    algorithmTitle.textContent = 'Selection Sort';
+                    algorithmDescription.textContent = 'Selection Sort is an in-place comparison sorting algorithm that divides the input list into a sorted and an unsorted region.';
+                } else if (algorithm === 'insertion') {
+                    insertionBtn.classList.add('active');
+                    algorithmTitle.textContent = 'Insertion Sort';
+                    algorithmDescription.textContent = 'Insertion Sort builds the final sorted array one item at a time by taking each element from the unsorted part and inserting it into its correct position in the sorted part.';
+                }
+                
+                if (sortingInProgress) {
+                    reset();
+                }
+                
+                currentAlgorithm = algorithm;
+            }
+            
+            // Algorithm button event listeners
+            bubbleBtn.addEventListener('click', function() {
+                setActiveAlgorithm('bubble');
+            });
+            
+            selectionBtn.addEventListener('click', function() {
+                setActiveAlgorithm('selection');
+            });
+            
+            insertionBtn.addEventListener('click', function() {
+                setActiveAlgorithm('insertion');
+            });
+            
+            // Initialize sorting
+            startBtn.addEventListener('click', function() {
+                const input = arrayInput.value.trim();
+                if (!input) {
+                    showMessage('Please enter numbers separated by commas.');
+                    return;
+                }
+                
+                // Parse input and validate
+                const inputArray = input.split(',').map(item => {
+                    const num = Number(item.trim());
+                    if (isNaN(num)) {
+                        showMessage(`Invalid input: "${item.trim()}" is not a number.`);
+                        return null;
+                    }
+                    return num;
+                });
+                
+                // Check for invalid entries
+                if (inputArray.includes(null)) {
+                    return;
+                }
+                
+                // Check array size
+                if (inputArray.length < 2) {
+                    showMessage('Please enter at least 2 numbers.');
+                    return;
+                }
+                
+                if (inputArray.length > 15) {
+                    showMessage('For better visualization, please enter at most 15 numbers.');
+                    return;
+                }
+                
+                // Initialize array and state
+                array = [...inputArray];
+                originalArray = [...inputArray];
+                sortingInProgress = true;
+                currentStep = 0;
+                
+                // Generate algorithm steps
+                generateSortingSteps();
+                
+                // Update UI
+                updateStatus('Initial array: ' + array.join(', '));
+                stepExplanation.textContent = 'Initial unsorted array. Click Next Step to begin sorting.';
+                clearMessage();
+                
+                // Draw initial state
+                draw();
+            });
+            
+            // Next step button
+            nextBtn.addEventListener('click', function() {
+                if (!sortingInProgress) {
+                    showMessage('Initialize an array first.');
+                    return;
+                }
+                
+                if (isAnimating) {
+                    return;
+                }
+                
+                let currentSteps;
+                
+                if (currentAlgorithm === 'bubble') {
+                    currentSteps = bubbleSortSteps;
+                } else if (currentAlgorithm === 'selection') {
+                    currentSteps = selectionSortSteps;
+                } else if (currentAlgorithm === 'insertion') {
+                    currentSteps = insertionSortSteps;
+                }
+                
+                if (currentStep < currentSteps.length) {
+                    const step = currentSteps[currentStep];
+                    
+                    // Update comparison and swap indices
+                    comparisonIndices = step.comparison || [-1, -1];
+                    swapIndices = step.swap || [-1, -1];
+                    
+                    // Apply the step
+                    array = [...step.array];
+                    
+                    // Update explanation
+                    stepExplanation.textContent = step.explanation;
+                    
+                    // Update status
+                    updateStatus(`Step ${currentStep + 1}/${currentSteps.length}`);
+                    
+                    // Animate the step
+                    animateStep();
+                    
+                    currentStep++;
+                } else {
+                    // Sorting complete
+                    comparisonIndices = [-1, -1];
+                    swapIndices = [-1, -1];
+                    updateStatus('Sorting complete!');
+                    stepExplanation.textContent = 'The array is now fully sorted.';
+                    draw();
+                }
+            });
+            
+            // Reset button
+            resetBtn.addEventListener('click', function() {
+                reset();
+            });
+            
+            // Reset function
+            function reset() {
+                // Cancel any ongoing animation
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                
+                // Reset state
+                array = [...originalArray];
+                sortingInProgress = originalArray.length > 0;
+                currentStep = 0;
+                isAnimating = false;
+                comparisonIndices = [-1, -1];
+                swapIndices = [-1, -1];
+                
+                // Update UI
+                if (sortingInProgress) {
+                    updateStatus('Reset to initial array: ' + array.join(', '));
+                    stepExplanation.textContent = 'Initial unsorted array. Click Next Step to begin sorting.';
+                } else {
+                    updateStatus('Enter an array and click Initialize');
+                    stepExplanation.textContent = 'No sorting in progress. Enter an array to begin.';
+                }
+                
+                clearMessage();
+                draw();
+            }
+            
+            // Generate sorting steps for the current algorithm
+            function generateSortingSteps() {
+                // Clear previous steps
+                bubbleSortSteps.length = 0;
+                selectionSortSteps.length = 0;
+                insertionSortSteps.length = 0;
+                
+                if (currentAlgorithm === 'bubble') {
+                    generateBubbleSortSteps();
+                } else if (currentAlgorithm === 'selection') {
+                    generateSelectionSortSteps();
+                } else if (currentAlgorithm === 'insertion') {
+                    generateInsertionSortSteps();
+                }
+            }
+            
+            // Generate Bubble Sort steps
+            function generateBubbleSortSteps() {
+                const arr = [...originalArray];
+                const n = arr.length;
+                
+                for (let i = 0; i < n; i++) {
+                    for (let j = 0; j < n - i - 1; j++) {
+                        // Add comparison step
+                        bubbleSortSteps.push({
+                            array: [...arr],
+                            comparison: [j, j + 1],
+                            swap: [-1, -1],
+                            explanation: `Comparing elements at indices ${j} and ${j + 1}: ${arr[j]} and ${arr[j + 1]}`
+                        });
+                        
+                        if (arr[j] > arr[j + 1]) {
+                            // Add swap step
+                            [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                            bubbleSortSteps.push({
+                                array: [...arr],
+                                comparison: [-1, -1],
+                                swap: [j, j + 1],
+                                explanation: `Swapping elements at indices ${j} and ${j + 1}: ${arr[j]} and ${arr[j + 1]}`
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Generate Selection Sort steps
+            function generateSelectionSortSteps() {
+                const arr = [...originalArray];
+                const n = arr.length;
+                
+                for (let i = 0; i < n - 1; i++) {
+                    let minIdx = i;
+                    
+                    // Add step for new iteration
+                    selectionSortSteps.push({
+                        array: [...arr],
+                        comparison: [i, minIdx],
+                        swap: [-1, -1],
+                        explanation: `Starting to find minimum element in unsorted portion [${i}...${n-1}]`
+                    });
+                    
+                    for (let j = i + 1; j < n; j++) {
+                        // Add comparison step
+                        selectionSortSteps.push({
+                            array: [...arr],
+                            comparison: [minIdx, j],
+                            swap: [-1, -1],
+                            explanation: `Comparing current minimum (${arr[minIdx]} at index ${minIdx}) with element at index ${j} (${arr[j]})`
+                        });
+                        
+                        if (arr[j] < arr[minIdx]) {
+                            minIdx = j;
+                            
+                            // Add new minimum step
+                            selectionSortSteps.push({
+                                array: [...arr],
+                                comparison: [i, minIdx],
+                                swap: [-1, -1],
+                                explanation: `Found new minimum: ${arr[minIdx]} at index ${minIdx}`
+                            });
+                        }
+                    }
+                    
+                    // Add swap step (even if i === minIdx, for clarity)
+                    if (i !== minIdx) {
+                        [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+                        selectionSortSteps.push({
+                            array: [...arr],
+                            comparison: [-1, -1],
+                            swap: [i, minIdx],
+                            explanation: `Swapping elements at indices ${i} and ${minIdx}: ${arr[i]} and ${arr[minIdx]}`
+                        });
+                    } else {
+                        selectionSortSteps.push({
+                            array: [...arr],
+                            comparison: [-1, -1],
+                            swap: [-1, -1],
+                            explanation: `Element at index ${i} (${arr[i]}) is already in its sorted position`
+                        });
+                    }
+                }
+            }
+            
+            // Generate Insertion Sort steps
+            function generateInsertionSortSteps() {
+                const arr = [...originalArray];
+                const n = arr.length;
+                
+                // First element is already sorted
+                insertionSortSteps.push({
+                    array: [...arr],
+                    comparison: [0, -1],
+                    swap: [-1, -1],
+                    explanation: `Starting with first element ${arr[0]} which is already sorted`
+                });
+                
+                for (let i = 1; i < n; i++) {
+                    // Add step for new element to insert
+                    const key = arr[i];
+                    insertionSortSteps.push({
+                        array: [...arr],
+                        comparison: [i, -1],
+                        swap: [-1, -1],
+                        explanation: `Taking element at index ${i} (${key}) to insert into the sorted portion`
+                    });
+                    
+                    let j = i - 1;
+                    
+                    while (j >= 0 && arr[j] > key) {
+                        // Add comparison step
+                        insertionSortSteps.push({
+                            array: [...arr],
+                            comparison: [j, j + 1],
+                            swap: [-1, -1],
+                            explanation: `Comparing ${arr[j]} with ${arr[j + 1]}`
+                        });
+                        
+                        // Move element one position ahead
+                        arr[j + 1] = arr[j];
+                        
+                        // Add shift step
+                        insertionSortSteps.push({
+                            array: [...arr],
+                            comparison: [-1, -1],
+                            swap: [j, j + 1],
+                            explanation: `Shifting element ${arr[j]} to position ${j + 1}`
+                        });
+                        
+                        j--;
+                    }
+                    
+                    // Place the current element at its correct position
+                    if (arr[j + 1] !== key) {
+                        arr[j + 1] = key;
+                        insertionSortSteps.push({
+                            array: [...arr],
+                            comparison: [-1, -1],
+                            swap: [j + 1, i],
+                            explanation: `Placing ${key} at position ${j + 1}`
+                        });
+                    }
+                }
+            }
+            
+            // Animate a single step
+            function animateStep() {
+                isAnimating = true;
+                let progress = 0;
+                const duration = 30; // Animation frames
+                
+                function animate() {
+                    progress++;
+                    draw(progress / duration);
+                    
+                    if (progress < duration) {
+                        animationFrameId = requestAnimationFrame(animate);
+                    } else {
+                        isAnimating = false;
+                        animationFrameId = null;
+                    }
+                }
+                
+                animate();
+            }
+            
+            // Draw the current state of the array
+            function draw(animationProgress = 1) {
+                // Get canvas dimensions
+                const width = parseInt(canvas.style.width);
+                const height = parseInt(canvas.style.height);
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                // Draw title
+                ctx.fillStyle = '#2c3e50';
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText(`${algorithmTitle.textContent} Visualization`, width / 2, 30);
+                
+                // Calculate bar dimensions
+                const n = array.length;
+                const barWidth = Math.min(60, (width - 100) / n);
+                const spacing = 10;
+                const totalWidth = n * (barWidth + spacing) - spacing;
+                const startX = (width - totalWidth) / 2;
+                
+                // Find max value for scaling
+                const maxValue = Math.max(...array, ...originalArray);
+                const maxBarHeight = height - 100;
+                
+                // Draw bars
+                for (let i = 0; i < n; i++) {
+                    const x = startX + i * (barWidth + spacing);
+                    const barHeight = (array[i] / maxValue) * maxBarHeight;
+                    const y = height - 50 - barHeight;
+                    
+                    // Determine bar color based on state
+                    let barColor = '#3498db'; // Default blue
+                    
+                    if (swapIndices.includes(i)) {
+                        barColor = '#e74c3c'; // Red for swapped elements
+                    } else if (comparisonIndices.includes(i)) {
+                        barColor = '#f1c40f'; // Yellow for compared elements
+                    } else if (currentAlgorithm === 'insertion' && i <= currentStep - 1) {
+                        barColor = '#2ecc71'; // Green for sorted portion in insertion sort
+                    } else if (currentAlgorithm === 'selection' && i < currentStep) {
+                        barColor = '#2ecc71'; // Green for sorted portion in selection sort
+                    } else if (currentAlgorithm === 'bubble' && i >= n - currentStep) {
+                        barColor = '#2ecc71'; // Green for sorted portion in bubble sort
+                    }
+                    
+                    // Draw bar
+                    ctx.fillStyle = barColor;
+                    ctx.fillRect(x, y, barWidth, barHeight);
+                    
+                    // Draw value on top of the bar
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.font = '14px Arial';
+                    ctx.fillText(array[i], x + barWidth / 2, y - 5);
+                    
+                    // Draw index below the bar
+                    ctx.fillStyle = '#7f8c8d';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.font = '14px Arial';
+                    ctx.fillText(i, x + barWidth / 2, height - 30);
+                }
+            }
+            
+            // Update status display
+            function updateStatus(text) {
+                statusEl.textContent = text;
+            }
+            
+            // Show message
+            function showMessage(msg) {
+                messageEl.textContent = msg;
+                messageEl.style.opacity = 1;
+            }
+            
+            // Clear message
+            function clearMessage() {
+                messageEl.textContent = '';
+                messageEl.style.opacity = 0;
+            }
+            
+            // Initial draw
+            draw();
+        });
+    </script>
+</body>
+</html>
